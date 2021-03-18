@@ -1,23 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import VideoCard from './VideoCard';
+import { useState, useEffect } from 'react';
+import db from './firebase';
 
-function App() {
+function App(props) {
+  const [reels, setReels] = useState([]);
+
+  useEffect(() => {
+    db.collection('reels').onSnapshot((snapshot) => {
+      setReels(snapshot.docs.map((doc) => doc.data()));
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    // BEM CONVENTION
+    <div className="app">
+      <div className="app_top">
+        <img
+          className="app_logo"
+          src="../assets/image/instagram.png"
+          alt="logo"
+        />
+
+        <h1>Reels</h1>
+      </div>
+
+      <div className="app_videos">
+        {/* container of app_vidoes, scrollable */}
+        {reels.map(({ channel, song, avatarSrc, url, likes, shares }) => (
+          <VideoCard
+            channel={channel}
+            avatarSrc={avatarSrc}
+            song={song}
+            url={url}
+            likes={likes}
+            shares={shares}
+          />
+        ))}
+      </div>
     </div>
   );
 }
